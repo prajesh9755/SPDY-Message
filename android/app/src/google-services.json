@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "32434078853",
+    "project_id": "spdy-message",
+    "storage_bucket": "spdy-message.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:32434078853:android:f435a007875e3a739ed5ec",
+        "android_client_info": {
+          "package_name": "com.example.spdy_message"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiPuw-Tk9OPhpHKWEsEJpH6Z4pR1TeRRM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
