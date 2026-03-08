@@ -80,7 +80,10 @@ class Compressor {
             bytes: null,
           ),
         );
-      } catch (e) {
+      } catch (e, stackTrace) {
+        // Log the error for debugging
+        print('❌ COMPRESSOR ERROR for file "$renamed": $e');
+        print('   StackTrace: $stackTrace');
         // fallback copy original
         try {
           if (pf.path != null) {
@@ -161,23 +164,31 @@ class Compressor {
     String renamed,
     Directory cache,
   ) async {
-    final info = await VideoCompress.compressVideo(
-      src.path,
-      quality: VideoQuality
-          .LowQuality, // LowQuality is instantly fast and matches WhatsApp limits
-      deleteOrigin: false,
-      includeAudio: true,
-    );
-    if (info != null && info.file != null) {
-      final safeName = renamed.toLowerCase().endsWith('.mp4')
-          ? renamed
-          : '$renamed.mp4';
-      final outPath = p.join(
-        cache.path,
-        '${DateTime.now().microsecondsSinceEpoch}_$safeName',
+    try {
+      final MediaInfo? info = await VideoCompress.compressVideo(
+        src.path,
+        quality: VideoQuality.MediumQuality,
+        deleteOrigin: false,
+        includeAudio: true,
       );
-      return await info.file!.copy(outPath);
+
+      if (info != null && info.file != null && await info.file!.exists()) {
+        // Copy compressed file to cache with the renamed name
+        final safeName = renamed.toLowerCase().endsWith('.mp4')
+            ? renamed
+            : '$renamed.mp4';
+        final outPath = p.join(
+          cache.path,
+          '${DateTime.now().microsecondsSinceEpoch}_$safeName',
+        );
+        final compressed = await info.file!.copy(outPath);
+        return compressed;
+      }
+    } catch (e, stackTrace) {
+      print('❌ VIDEO COMPRESS ERROR: $e');
+      print('   StackTrace: $stackTrace');
     }
+    // Fallback: just copy the original video
     return await _copyToCache(src, renamed, cache);
   }
 

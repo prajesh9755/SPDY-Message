@@ -1,3 +1,4 @@
+
 allprojects {
     repositories {
         google()
@@ -30,4 +31,3 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
-

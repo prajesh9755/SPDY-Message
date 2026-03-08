@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:spdy_message/screens/home_screen.dart';
 import 'screens/login_screen.dart';
@@ -8,10 +9,15 @@ import 'services/crypto_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await Firebase.initializeApp();
+  // WhatsApp-style status bar
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Color(0xFF00796B),
+      statusBarIconBrightness: Brightness.light,
+    ),
+  );
 
-  // Initialize crypto service
+  await Firebase.initializeApp();
   await CryptoService.init();
 
   runApp(const MyApp());
@@ -23,20 +29,50 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'SpdyMessage',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primaryColor: const Color(0xFF075E54),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF075E54),
+          primary: const Color(0xFF075E54),
+          secondary: const Color(0xFF25D366),
+          surface: Colors.white,
+          brightness: Brightness.light,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF075E54),
+          foregroundColor: Colors.white,
+          elevation: 0,
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+          iconTheme: IconThemeData(color: Colors.white),
+        ),
+        scaffoldBackgroundColor: Colors.white,
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Color(0xFF25D366),
+          foregroundColor: Colors.white,
+        ),
+      ),
       home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(), // 🔥 Listens for login/logout
+        stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-          // 1. While checking if user is logged in, show a loader
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            return const Scaffold(
+              backgroundColor: Color(0xFF075E54),
+              body: Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
+            );
           }
 
-          // 2. If user exists, go straight to Home
           if (snapshot.hasData) {
             return const HomeScreen();
           }
 
-          // 3. Otherwise, show the Login page
           return const AuthScreen();
         },
       ),
